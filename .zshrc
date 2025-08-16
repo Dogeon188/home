@@ -15,7 +15,7 @@
     export FZF_DEFAULT_OPTS='--height 40% --layout reverse --border top --preview "fzf-preview.sh {}"'
     export FZF_DEFAULT_COMMAND='find . -type f -not -path "*/\.git/*"'
 
-    export PATH=$HOME/.local/bin:$PATH
+    export PATH=$HOME/.local/bin:/opt/homebrew/bin:$PATH
 
     # bun
     export BUN_INSTALL="$HOME/.bun"
@@ -152,15 +152,20 @@
             return 0
         fi
         typeset DIR_NAME=${1:-.}
-        if [ $(du -d 1 "$DIR_NAME" | wc -l) -gt 1 ]; then
-            du -d 1 -h "$DIR_NAME" |
-                sort -rh |
-                while read -r line; do
-                    echo "$fg_bold[cyan]󰉋$reset_color $line"
-                done
+
+        # Cache the du output
+        du_output=$(du -d 1 -h "$DIR_NAME" 2&>/dev/null)
+
+        # Only process if there is more than one entry
+        if [ "$(printf '%s\n' "$du_output" | wc -l)" -gt 1 ]; then
+            printf '%s\n' "$du_output" |
+            sort -rh |
+            while read -r line; do
+                echo "$fg_bold[cyan]󰉋$reset_color $line"
+            done
         fi
         if [ $(find "$DIR_NAME" -maxdepth 1 -type f | wc -l) -gt 0 ]; then
-            find "$DIR_NAME" -maxdepth 1 -type f -exec du -h {} + |
+            find "$DIR_NAME" -maxdepth 1 -type f -exec du -h {} + 2&>/dev/null |
                 sort -rh |
                 while read -r line; do
                     echo "$fg_bold[green]$reset_color $line"
