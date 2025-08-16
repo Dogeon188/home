@@ -5,6 +5,8 @@
 !.vscode/
 !.vscode/settings.json
 
+!README.md
+
 !*.zshrc
 !*.p10k.zsh
 !*.tmux.conf
