@@ -15,11 +15,8 @@
     export FZF_DEFAULT_OPTS='--height 40% --layout reverse --border top --preview "fzf-preview.sh {}"'
     export FZF_DEFAULT_COMMAND='find . -type f -not -path "*/\.git/*"'
 
-    export PATH=$HOME/.local/bin:/opt/homebrew/bin:$PATH
-
-    # bun
     export BUN_INSTALL="$HOME/.bun"
-    export PATH="$BUN_INSTALL/bin:$PATH"
+    export PATH="$HOME/.local/bin:/opt/homebrew/bin:$BUN_INSTALL/bin:$PATH"
 
     export UV_PYTHON=3.13
 
@@ -48,7 +45,6 @@
     zplug "zsh-users/zsh-history-substring-search"
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
     zplug "plugins/aliases", from:oh-my-zsh
-    zplug "plugins/bun", from:oh-my-zsh
     zplug "plugins/colored-man-pages", from:oh-my-zsh
     zplug "plugins/git", from:oh-my-zsh
     zplug "plugins/qrcode", from:oh-my-zsh
@@ -105,6 +101,9 @@
         source /usr/share/doc/fzf/examples/key-bindings.zsh
         source /usr/share/doc/fzf/examples/completion.zsh
     fi
+
+    # Initialize bun completions
+    [ -s "/home/dogeon/.bun/_bun" ] && source "/home/dogeon/.bun/_bun"
 
 ## ====== Custom Aliases ======
 
