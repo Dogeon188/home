@@ -1,0 +1,10 @@
+# Only keep track of manually-defined config files
+*
+
+!.gitignore
+!.vscode/
+!.vscode/settings.json
+
+!*.zshrc
+!*.p10k.zsh
+!*.tmux.conf
