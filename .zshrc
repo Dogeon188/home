@@ -84,11 +84,6 @@
     # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
     [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-    zstyle ':omz:plugins:alias-finder' autoload yes # disabled by default
-    zstyle ':omz:plugins:alias-finder' longer yes # disabled by default
-    zstyle ':omz:plugins:alias-finder' exact yes # disabled by default
-    zstyle ':omz:plugins:alias-finder' cheaper yes # disabled by default
-
 ## ====== Completion and Key Bindings ======
 
     # Initialize uv completion
@@ -104,8 +99,12 @@
     compdef _uv_run_mod uv
 
     # Initialize fzf key bindings and fuzzy completion
-    source /usr/share/doc/fzf/examples/key-bindings.zsh
-    source /usr/share/doc/fzf/examples/completion.zsh
+    if fzf --zsh &> /dev/null; then
+        source <(fzf --zsh)
+    else
+        source /usr/share/doc/fzf/examples/key-bindings.zsh
+        source /usr/share/doc/fzf/examples/completion.zsh
+    fi
 
 ## ====== Custom Aliases ======
 
