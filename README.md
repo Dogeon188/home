@@ -27,3 +27,4 @@ git reset origin/main
   - [`bun`](https://bun.com) - JavaScript runtime
   - [`fzf`](https://github.com/junegunn/fzf) - Fuzzy finder
   - [`eza`](https://github.com/eza-community/eza) - Modern replacement for `ls`
+  - [`zoxide`](https://github.com/ajeetdsouza/zoxide) - Smart directory navigation

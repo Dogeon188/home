@@ -82,6 +82,29 @@
 
 ## ====== Completion and Key Bindings ======
 
+    # Initialize uv completion
+    eval "$(uv generate-shell-completion zsh)"
+    # Fix completions for uv run to autocomplete .py files
+    _uv_run_mod() {
+        if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+            _arguments '*:filename:_files -g "*.py"'
+        else
+            _uv "$@"
+        fi
+    }
+    compdef _uv_run_mod uv
+
+    # Initialize fzf key bindings and fuzzy completion
+    if fzf --zsh &> /dev/null; then
+        source <(fzf --zsh)
+    else
+        source /usr/share/doc/fzf/examples/key-bindings.zsh
+        source /usr/share/doc/fzf/examples/completion.zsh
+    fi
+
+    # Initialize bun completions
+    [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
+    
     # https://unix.stackexchange.com/a/214699
     # https://thevaluable.dev/zsh-completion-guide-examples/
 
@@ -109,29 +132,6 @@
     # Enable caching for completion
     zstyle ':completion:*' use-cache on
     zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompcache"
-
-    # Initialize uv completion
-    eval "$(uv generate-shell-completion zsh)"
-    # Fix completions for uv run to autocomplete .py files
-    _uv_run_mod() {
-        if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
-            _arguments '*:filename:_files -g "*.py"'
-        else
-            _uv "$@"
-        fi
-    }
-    compdef _uv_run_mod uv
-
-    # Initialize fzf key bindings and fuzzy completion
-    if fzf --zsh &> /dev/null; then
-        source <(fzf --zsh)
-    else
-        source /usr/share/doc/fzf/examples/key-bindings.zsh
-        source /usr/share/doc/fzf/examples/completion.zsh
-    fi
-
-    # Initialize bun completions
-    [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
 ## ====== Custom Aliases ======
 
