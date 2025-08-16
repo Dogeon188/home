@@ -27,12 +27,12 @@
 
 ## ====== Plugins ======
 
-    # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-    # Initialization code that may require console input (password prompts, [y/n]
-    # confirmations, etc.) must go above this block; everything else may go below.
-    if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-    fi
+    # # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+    # # Initialization code that may require console input (password prompts, [y/n]
+    # # confirmations, etc.) must go above this block; everything else may go below.
+    # if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    # source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    # fi
 
     source ~/.zplug/init.zsh
 
@@ -81,6 +81,34 @@
     [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 ## ====== Completion and Key Bindings ======
+
+    # https://unix.stackexchange.com/a/214699
+    # https://thevaluable.dev/zsh-completion-guide-examples/
+
+    zstyle ':completion:*' verbose yes
+    zstyle ':completion:*' menu select
+
+     # Set colors for completion
+    if [ -x /usr/bin/dircolors ]; then
+        test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    fi
+    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+    zstyle ':completion:*:descriptions' format "$fg[green]-- %d --$reset_color"
+    zstyle ':completion:*:corrections' format "$fg[yellow]-- %d (errors: %e) --$reset_color"
+    zstyle ':completion:*:messages' format "$fg[purple]-- %d --$reset_color"
+    zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
+    zstyle ':completion:*' group-name ''
+
+    # Enable case-insensitive & from-middle matching
+    zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
+
+    # Enable approximate completion
+    zstyle ':completion:*' completer _extensions _complete _approximate
+
+    # Enable caching for completion
+    zstyle ':completion:*' use-cache on
+    zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompcache"
 
     # Initialize uv completion
     eval "$(uv generate-shell-completion zsh)"
