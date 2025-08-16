@@ -103,7 +103,7 @@
     fi
 
     # Initialize bun completions
-    [ -s "/home/dogeon/.bun/_bun" ] && source "/home/dogeon/.bun/_bun"
+    [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
 ## ====== Custom Aliases ======
 
