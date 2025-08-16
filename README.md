@@ -20,6 +20,7 @@ git reset origin/main
 - Uses [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for theming.
 - Assumes the following programs are installed:
   - `zsh`
+  - `zplug`
   - `tmux`
   - `git`
   - [`uv`](https://docs.astral.sh/uv/) - Modern Python package manager
