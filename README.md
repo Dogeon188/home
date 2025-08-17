@@ -17,9 +17,11 @@ git reset origin/main
 Then set up tmux packages:
 
 - Install Tmux Plugin Manager (TPM) if not already installed:
+
   ```sh
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ```
+
 - Start tmux and run `prefix + I` to install the plugins.
 
 ## Content
