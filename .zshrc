@@ -13,7 +13,7 @@
     fi
 
     export FZF_DEFAULT_OPTS='--height 40% --layout reverse --border top --preview "fzf-preview.sh {}"'
-    export FZF_DEFAULT_COMMAND='find . -type f -not -path "*/\.git/*"'
+    export FZF_DEFAULT_COMMAND='find . -type f -not \( -path "*/\.git/*" -or -path "*/\.venv/*" -or -path "*/node_modules/*" -or -path "*/__pycache__/*" -or -path "*/.cache/*" -or -path "*/.DS_Store" \)'
 
     export BUN_INSTALL="$HOME/.bun"
     export PATH="$HOME/.local/bin:/opt/homebrew/bin:$BUN_INSTALL/bin:$PATH"
