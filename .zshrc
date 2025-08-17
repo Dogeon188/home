@@ -136,7 +136,14 @@
     alias cls=clear
     alias md=mkdir
     alias ipy=ipython
-    alias bat=batcat
+    if command -v batcat &> /dev/null; then
+        # On Ubuntu
+        alias cat=batcat
+        alias bat=batcat
+    else
+        # On macOS (Homebrew)
+        alias cat=bat
+    fi
 
 ## ====== Custom Functions ======
 

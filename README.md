@@ -37,3 +37,4 @@ Then set up tmux packages:
   - [`fzf`](https://github.com/junegunn/fzf) - Fuzzy finder
   - [`eza`](https://github.com/eza-community/eza) - Modern replacement for `ls`
   - [`zoxide`](https://github.com/ajeetdsouza/zoxide) - Smart directory navigation
+  - [`batcat`](https://github.com/sharkdp/bat?tab=readme-ov-file#installation) - Cat clone with syntax highlighting
