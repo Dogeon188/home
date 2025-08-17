@@ -14,15 +14,24 @@ git checkout -b main --track origin/main
 git reset origin/main
 ```
 
+Then set up tmux packages:
+
+- Install Tmux Plugin Manager (TPM) if not already installed:
+  ```sh
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  ```
+- Start tmux and run `prefix + I` to install the plugins.
+
 ## Content
 
-- Uses [zplug](https://github.com/zplug/zplug) for plugin management.
-- Uses [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for theming.
+- Uses [`zplug`](https://github.com/zplug/zplug) for plugin management.
+- Uses [`p10k`](https://github.com/romkatv/powerlevel10k) for theming.
 - Assumes the following programs are installed:
   - `zsh`
   - `zplug`
   - `tmux`
   - `git`
+  - [`tpm`](https://github.com/tmux-plugins/tpm) - Tmux plugin manager
   - [`uv`](https://docs.astral.sh/uv/) - Modern Python package manager
   - [`bun`](https://bun.com) - JavaScript runtime
   - [`fzf`](https://github.com/junegunn/fzf) - Fuzzy finder

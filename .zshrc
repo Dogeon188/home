@@ -18,8 +18,6 @@
     export BUN_INSTALL="$HOME/.bun"
     export PATH="$HOME/.local/bin:/opt/homebrew/bin:$BUN_INSTALL/bin:$PATH"
 
-    export UV_PYTHON=3.13
-
     # History config
     HISTSIZE=10000
     SAVEHIST=10000
@@ -123,11 +121,11 @@
     zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
     zstyle ':completion:*' group-name ''
 
-    # Enable case-insensitive & from-middle matching
-    zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
-
     # Enable approximate completion
     zstyle ':completion:*' completer _extensions _complete _approximate
+
+    # Enable case-insensitive & from-middle matching
+    zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
 
     # Enable caching for completion
     zstyle ':completion:*' use-cache on
