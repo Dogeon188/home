@@ -37,6 +37,7 @@
     zplug 'zplug/zplug', hook-build:'zplug --self-manage'
     zplug "romkatv/powerlevel10k", as:theme, depth:1
     zplug "MichaelAquilina/zsh-you-should-use"
+    zplug "Katrovsky/zsh-ollama-completion"
     zplug "z-shell/zsh-eza"
     zplug "zsh-users/zsh-autosuggestions"
     zplug "zsh-users/zsh-completions"
@@ -204,3 +205,6 @@
                 done
         fi
     }
+
+# bun completions
+[ -s "/home/dogeon/.bun/_bun" ] && source "/home/dogeon/.bun/_bun"
