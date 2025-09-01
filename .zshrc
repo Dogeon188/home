@@ -23,6 +23,11 @@
     SAVEHIST=10000
     HISTFILE=~/.zsh_history
 
+    # Homebrew environment
+    if command -v brew >/dev/null 2>&1; then
+        eval "$(brew shellenv)"
+    fi
+
 ## ====== Plugins ======
 
     # # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -205,6 +210,3 @@
                 done
         fi
     }
-
-# bun completions
-[ -s "/home/dogeon/.bun/_bun" ] && source "/home/dogeon/.bun/_bun"
