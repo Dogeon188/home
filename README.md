@@ -8,6 +8,7 @@ Should use ZSH as the default shell.
 
 ```sh
 cd ~
+git init
 git remote add origin git@github.com:Dogeon188/home.git
 git fetch origin
 git checkout -b main --track origin/main
