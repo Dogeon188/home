@@ -16,7 +16,7 @@
     export FZF_DEFAULT_COMMAND='find . -type f -not \( -path "*/\.git/*" -or -path "*/\.venv/*" -or -path "*/node_modules/*" -or -path "*/__pycache__/*" -or -path "*/.cache/*" -or -path "*/.DS_Store" \)'
 
     export BUN_INSTALL="$HOME/.bun"
-    export PATH="$HOME/.local/bin:/opt/homebrew/bin:$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
+    export PATH="$HOME/.local/bin:/opt/homebrew/bin:$HOME/.cargo/bin:$BUN_INSTALL/bin:$HOME/go/bin:$PATH"
 
     # History config
     HISTSIZE=10000
