@@ -58,23 +58,24 @@
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
     zplug "plugins/aliases", from:oh-my-zsh
     zplug "plugins/colored-man-pages", from:oh-my-zsh
-    zplug "plugins/git", from:oh-my-zsh
-    zplug "plugins/qrcode", from:oh-my-zsh
+    zplug "plugins/docker", from:oh-my-zsh
+    # zplug "plugins/git", from:oh-my-zsh
+    # zplug "plugins/qrcode", from:oh-my-zsh
     zplug "plugins/ssh", from:oh-my-zsh
-    zplug "plugins/urltools", from:oh-my-zsh
-    zplug "plugins/web-search", from:oh-my-zsh
+    # zplug "plugins/urltools", from:oh-my-zsh
+    # zplug "plugins/web-search", from:oh-my-zsh
     zplug "plugins/zoxide", from:oh-my-zsh
 
     # MacOS-specific plugins
-    # if [[ $(uname) == "Darwin" ]]; then
-    zplug "plugins/macos", from:oh-my-zsh
-    # fi
+    if [[ $(uname) == "Darwin" ]]; then
+        zplug "plugins/macos", from:oh-my-zsh
+    fi
 
     # Ubuntu-specific plugins
-    # if [[ $(uname) == "Linux" && $(lsb_release -si 2&>/dev/null) == "Ubuntu" ]]; then
-    zplug "plugins/apt", from:oh-my-zsh
-    zplug "plugins/ubuntu", from:oh-my-zsh
-    # fi
+    if [[ $(uname) == "Linux" && $(lsb_release -si 2&>/dev/null) == "Ubuntu" ]]; then
+        zplug "plugins/apt", from:oh-my-zsh
+        zplug "plugins/ubuntu", from:oh-my-zsh
+    fi
 
     # Install packages that have not been installed yet
     if ! zplug check --verbose; then
@@ -116,7 +117,7 @@
 
     # Initialize bun completions
     [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
-    
+
     # https://unix.stackexchange.com/a/214699
     # https://thevaluable.dev/zsh-completion-guide-examples/
 
