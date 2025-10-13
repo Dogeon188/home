@@ -1,3 +1,10 @@
+    # # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+    # # Initialization code that may require console input (password prompts, [y/n]
+    # # confirmations, etc.) must go above this block; everything else may go below.
+    # if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    # source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    # fi
+
 ## ====== Environment Variables ======
 
     # You may need to manually set your language environment
@@ -38,12 +45,12 @@
 
 ## ====== Plugins ======
 
-    # # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-    # # Initialization code that may require console input (password prompts, [y/n]
-    # # confirmations, etc.) must go above this block; everything else may go below.
-    # if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    # source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-    # fi
+    if [ ! -d ~/.zplug ]; then
+        echo "zplug not found. Install from https://github.com/zplug/zplug ? [y/N]: "
+        if read -q; then
+            echo; curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+        fi
+    fi
 
     source ~/.zplug/init.zsh
 
@@ -96,16 +103,20 @@
 ## ====== Completion and Key Bindings ======
 
     # Initialize uv completion
-    eval "$(uv generate-shell-completion zsh)"
-    # Fix completions for uv run to autocomplete .py files
-    _uv_run_mod() {
-        if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
-            _arguments '*:filename:_files -g "*.py"'
-        else
-            _uv "$@"
-        fi
-    }
-    compdef _uv_run_mod uv
+    if ! command -v uv &> /dev/null; then
+        echo "uv could not be found, please install it from https://docs.astral.sh/uv/getting-started/installation/"
+    else
+        eval "$(uv generate-shell-completion zsh)"
+        # Fix completions for uv run to autocomplete .py files
+        _uv_run_mod() {
+            if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+                _arguments '*:filename:_files -g "*.py"'
+            else
+                _uv "$@"
+            fi
+        }
+        compdef _uv_run_mod uv
+    fi
 
     # Initialize fzf key bindings and fuzzy completion
     if fzf --zsh &> /dev/null; then
