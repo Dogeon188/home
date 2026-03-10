@@ -138,10 +138,6 @@ fi
 # Initialize bun completions
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
-
-# OpenClaw Completion
-source "/Users/dogeon/.openclaw/completions/openclaw.zsh"
-
 # 6. ALIASES & FUNCTIONS
 
 alias cls='clear'
@@ -149,7 +145,7 @@ alias md='mkdir -p'
 command -v batcat >/dev/null && alias bat='batcat'
 command -v ipython >/dev/null && alias ipy='ipython'
 
-# ## ====== Custom Functions ======
+# 7. CUSTOM FUNCTIONS
 
 # tat: tmux attach
 function tat {
