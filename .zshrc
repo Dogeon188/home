@@ -12,7 +12,13 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-export EDITOR='nano'  # Preferred editor for local and remote sessions
+if command -v nvim &>/dev/null; then
+    export EDITOR='nvim'
+elif command -v vim &>/dev/null; then
+    export EDITOR='vim'
+else
+    export EDITOR='nano'
+fi
 
 # History config
 HISTSIZE=10000
@@ -44,42 +50,46 @@ if [[ ! -d ~/.zplug ]]; then
     fi
 fi
 
-source ~/.zplug/init.zsh
+if [[ -f ~/.zplug/init.zsh ]]; then
+    source ~/.zplug/init.zsh
 
-zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-zplug "romkatv/powerlevel10k", as:theme, depth:1  # Powerlevel10k theme
-zplug "MichaelAquilina/zsh-you-should-use"  # Suggest aliases when you type a command that has an alias
-zplug "ocodo/ollama_zsh_completion"  # Ollama completions for zsh
-zplug "zsh-users/zsh-autosuggestions"  # Suggest commands as you type based on history and completions
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "zsh-users/zsh-completions"  # Additional completion definitions for various commands
+    zplug 'zplug/zplug', hook-build:'zplug --self-manage'
+    zplug "romkatv/powerlevel10k", as:theme, depth:1  # Powerlevel10k theme
+    zplug "MichaelAquilina/zsh-you-should-use"  # Suggest aliases when you type a command that has an alias
+    zplug "ocodo/ollama_zsh_completion"  # Ollama completions for zsh
+    zplug "zsh-users/zsh-autosuggestions"  # Suggest commands as you type based on history and completions
+    zplug "zsh-users/zsh-syntax-highlighting", defer:2
+    zplug "zsh-users/zsh-completions"  # Additional completion definitions for various commands
 
-zplug "plugins/aliases", from:oh-my-zsh  # Use `als` to list all aliases
-zplug "plugins/colored-man-pages", from:oh-my-zsh  # Colorize man
-# zplug "plugins/common-aliases", from:oh-my-zsh  # Common aliases for various commands
-zplug "plugins/docker", from:oh-my-zsh  # Docker completions and aliases
-zplug "plugins/emoji", from:oh-my-zsh  # Adds emoji autocompletion
-zplug "plugins/ssh", from:oh-my-zsh  # SSH completions and utility functions
-zplug "plugins/zoxide", from:oh-my-zsh  # Initialize zoxide for fast directory navigation
+    zplug "plugins/aliases", from:oh-my-zsh  # Use `als` to list all aliases
+    zplug "plugins/colored-man-pages", from:oh-my-zsh  # Colorize man
+    # zplug "plugins/common-aliases", from:oh-my-zsh  # Common aliases for various commands
+    zplug "plugins/docker", from:oh-my-zsh  # Docker completions and aliases
+    zplug "plugins/emoji", from:oh-my-zsh  # Adds emoji autocompletion
+    zplug "plugins/ssh", from:oh-my-zsh  # SSH completions and utility functions
+    zplug "plugins/zoxide", from:oh-my-zsh  # Initialize zoxide for fast directory navigation
 
-if command -v eza &> /dev/null; then
-    zplug "z-shell/zsh-eza"
+    if command -v eza &>/dev/null; then
+        zplug "z-shell/zsh-eza"
+    else
+        printf "eza not found, skipping zsh-eza plugin. Install it from https://github.com/eza-community/eza \n"
+    fi
+
+    # OS Specifics
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        zplug "plugins/macos", from:oh-my-zsh
+    elif [[ -f /etc/debian_version ]]; then
+        zplug "plugins/apt", from:oh-my-zsh
+    fi
+
+    # Install plugins if they are not already installed
+    if ! zplug check; then
+        zplug install
+    fi
+    zplug load
 else
-    printf "eza not found, skipping zsh-eza plugin. Install it from https://github.com/eza-community/eza \n"
+    echo "[zshrc] zplug not installed — skipping plugins"
 fi
-
-# OS Specifics
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    zplug "plugins/macos", from:oh-my-zsh
-elif [[ -f /etc/debian_version ]]; then
-    zplug "plugins/apt", from:oh-my-zsh
-fi
-
-# Install plugins if they are not already installed
-if ! zplug check; then
-    zplug install
-fi
-zplug load
 
 # 4. COMPLETION SYSTEM
 
@@ -122,8 +132,13 @@ if command -v fzf >/dev/null; then
 fi
 
 # Initialize uv completion
-if command -v uv &> /dev/null; then
-    eval "$(uv generate-shell-completion zsh)"
+if command -v uv &>/dev/null; then
+    _uv_comp_cache="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/_uv_completion"
+    if [[ ! -f "$_uv_comp_cache" ]] || [[ "$(command -v uv)" -nt "$_uv_comp_cache" ]]; then
+        uv generate-shell-completion zsh >| "$_uv_comp_cache"
+    fi
+    source "$_uv_comp_cache"
+    unset _uv_comp_cache
     # Fix completions for uv run to autocomplete .py files
     _uv_run_mod() {
         if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
@@ -147,11 +162,13 @@ command -v ipython >/dev/null && alias ipy='ipython'
 
 # 7. CUSTOM FUNCTIONS
 
+autoload -Uz colors && colors
+
 # tat: tmux attach
 function tat {
     local name=$(basename "$PWD" | tr -d '.')
 
-    if tmux ls 2>&1 | grep "$name"; then
+    if tmux ls 2>&1 | grep -q "$name"; then
         tmux attach -t "$name"
     elif [ -f .envrc ]; then
         direnv exec / tmux new-session -s "$name"
@@ -177,9 +194,6 @@ function zdir() {
     local dir_name=${dir_raw:t}
     local zip_name=${2:-${dir_name}.zip}
 
-    typeset DIR_NAME=$1
-    typeset ZIP_NAME=${2:-$(basename "$DIR_NAME")}.zip
-    
     if zip -r -q -9 "$zip_name" "$dir_raw" -x "*.DS_Store" -x "**/__MACOSX" -x "**/.git/*"; then
         print -P "%B%F{cyan} $dir_raw%f %F{white}󱦰%f %F{green} $zip_name%f%b"
     else
@@ -200,7 +214,8 @@ function dsize() {
     local dir_name=${1:-.}
 
     # Cache the du output
-    du_output=$(du -d 1 -h "$dir_name" 2&>/dev/null)
+    local du_output
+    du_output=$(du -d 1 -h "$dir_name" 2>/dev/null)
 
     # Folders
     # Only process if there is more than one entry
@@ -213,8 +228,8 @@ function dsize() {
     fi
 
     # Files
-    if [ $(find "$dir_name" -maxdepth 1 -type f | wc -l) -gt 0 ]; then
-        find "$dir_name" -maxdepth 1 -type f -exec du -h {} + 2&>/dev/null |
+    if [[ -n "$(find "$dir_name" -maxdepth 1 -type f -print -quit 2>/dev/null)" ]]; then
+        find "$dir_name" -maxdepth 1 -type f -exec du -h {} + 2>/dev/null |
             sort -rh |
             while read -r line; do
                 echo "$fg_bold[green]$reset_color $line"
