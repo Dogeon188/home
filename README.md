@@ -4,13 +4,27 @@ Configuration files for a functional shell environment. Supports both **Zsh** an
 
 ## Installation
 
+First, clone this repository into your home directory and set up the Git remote:
+
 ```sh
 cd ~
 git init
 git remote add origin git@github.com:Dogeon188/home.git
 git fetch origin
-git checkout -b main --track origin/main
-git reset origin/main
+git branch -m main
+```
+
+Then, check which local files will be overwritten:
+
+```sh
+git diff HEAD..origin/main --name-only
+```
+
+Back up anything you want to keep, then apply:
+
+```sh
+git reset --hard origin/main
+git branch --set-upstream-to=origin/main
 ```
 
 ### Change Shell

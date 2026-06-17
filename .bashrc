@@ -40,6 +40,7 @@ _prepend_path "$HOME/go/bin"
 _prepend_path "$BUN_INSTALL/bin"
 _prepend_path "$HOME/.cargo/bin"
 _prepend_path "$HOME/.local/bin"
+_prepend_path "$HOME/.fzf/bin"
 unset -f _prepend_path
 export PATH
 
