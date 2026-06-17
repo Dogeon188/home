@@ -2,7 +2,7 @@
 *
 
 !.gitignore
-!.vscode/
+!.vscode
 !.vscode/settings.json
 
 !README.md
