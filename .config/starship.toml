@@ -1,0 +1,30 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Inserts a blank line between shell prompts
+add_newline = true
+
+format = '$os$all $status$line_break$character'
+
+# Disable the package module, hiding it from the prompt completely
+[package]
+disabled = true
+
+[python]
+symbol = "\U000f0320 "
+
+[os]
+disabled = false
+
+[os.symbols]
+Debian = "\U0000e77d "
+Macos = "\U0000e711 "
+
+[status]
+disabled = false
+symbol = "\U0000f467 "
+sigint_symbol = "\U0000e009"
+
+[hostname]
+ssh_symbol = "@"
+format = '[$ssh_symbol$hostname]($style) '
