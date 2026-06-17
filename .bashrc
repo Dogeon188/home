@@ -1,3 +1,9 @@
+## 0. INTERACTIVE GUARD
+
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
 ## 1. ENVIRONMENT VARIABLES
 
@@ -37,14 +43,24 @@ _prepend_path "$HOME/.local/bin"
 unset -f _prepend_path
 export PATH
 
-## 2. SHELL OPTIONS
+## 2. SHELL SETUP
+
+# Make less handle non-text files
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# Chroot identifier (Debian/Ubuntu)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+## 3. SHELL OPTIONS
 
 shopt -s checkwinsize   # Update LINES/COLUMNS after each command
 shopt -s globstar 2>/dev/null  # ** recursive glob (bash 4+)
 shopt -s cdspell        # Autocorrect minor cd typos
 shopt -s dirspell 2>/dev/null  # Autocorrect directory name typos in completion
 
-## 3. COMPLETION SYSTEM
+## 4. COMPLETION SYSTEM
 
 if [[ -r /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
     source /opt/homebrew/etc/profile.d/bash_completion.sh
@@ -61,7 +77,7 @@ if command -v docker &>/dev/null; then
     fi
 fi
 
-## 4. EXTERNAL TOOL INTEGRATIONS
+## 5. EXTERNAL TOOL INTEGRATIONS
 
 # Starship prompt (cross-shell replacement for Powerlevel10k)
 if command -v starship >/dev/null; then
@@ -73,7 +89,7 @@ else
         branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
         printf ' (%s)' "$branch"
     }
-    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(_parse_git_branch)\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(_parse_git_branch)\[\033[00m\]\$ '
 fi
 
 # Initialize fzf key bindings and fuzzy completion
@@ -115,14 +131,18 @@ if command -v eza &>/dev/null; then
     alias l='eza -1'
 fi
 
-## 5. ALIASES & FUNCTIONS
+## 6. ALIASES & FUNCTIONS
 
 alias cls='clear'
 alias md='mkdir -p'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 command -v batcat >/dev/null && alias bat='batcat'
 command -v ipython >/dev/null && alias ipy='ipython'
 
-## 6. CUSTOM FUNCTIONS
+## 7. CUSTOM FUNCTIONS
 
 # Colors for use in functions
 _RED='\033[0;31m'
@@ -205,3 +225,7 @@ dsize() {
             done
     fi
 }
+
+## 8. LOCAL ENVIRONMENT
+
+[[ -s "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
