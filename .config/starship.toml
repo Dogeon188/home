@@ -17,14 +17,18 @@ symbol = "\U000f0320 "
 disabled = false
 
 [os.symbols]
-Debian = "\U0000e77d "
-Macos = "\U0000e711 "
+Debian = "\ue77d "
+Macos = "\ue711 "
+Ubuntu = "\uef72 "
 
 [status]
 disabled = false
-symbol = "\U0000f467 "
-sigint_symbol = "\U0000e009"
+symbol = "\uf467 "
+sigint_symbol = "\ue009"
 
 [hostname]
 ssh_symbol = "@"
 format = '[$ssh_symbol$hostname]($style) '
+
+[username]
+format = '[$user]($style)'
