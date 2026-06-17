@@ -1,24 +1,9 @@
-
-## 1. POWERLEVEL10K INSTANT PROMPT (Must stay at the very top)
-
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-# source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
-
-## 2. ENVIRONMENT VARIABLES
-
-# Set defaults if not already set in .zshenv
+## 1. ENVIRONMENT VARIABLES
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-if command -v nvim &>/dev/null; then
-    export EDITOR='nvim'
-elif command -v vim &>/dev/null; then
-    export EDITOR='vim'
-else
-    export EDITOR='nano'
-fi
+export EDITOR='nano'
 
 # History config
 HISTSIZE=10000
@@ -37,11 +22,10 @@ fi
 # Path config
 typeset -U path fpath
 export BUN_INSTALL="$HOME/.bun"
-# export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$BUN_INSTALL/bin:$HOME/go/bin:$PATH"
 path=("$HOME/.local/bin" "$HOME/.cargo/bin" "$BUN_INSTALL/bin" "$HOME/go/bin" "/opt/homebrew/bin" $path)
 fpath=("$HOME/.zfunc" "$HOME/.zsh/completions" $fpath)
 
-## 3. PLUGINS
+## 2. PLUGINS
 
 if [[ ! -d ~/.zplug ]]; then
     printf "Install zplug? [y/N]: "
@@ -75,14 +59,12 @@ if [[ -f ~/.zplug/init.zsh ]]; then
         printf "eza not found, skipping zsh-eza plugin. Install it from https://github.com/eza-community/eza \n"
     fi
 
-    # OS Specifics
     if [[ "$OSTYPE" == "darwin"* ]]; then
         zplug "plugins/macos", from:oh-my-zsh
     elif [[ -f /etc/debian_version ]]; then
         zplug "plugins/apt", from:oh-my-zsh
     fi
 
-    # Install plugins if they are not already installed
     if ! zplug check; then
         zplug install
     fi
@@ -91,16 +73,14 @@ else
     echo "[zshrc] zplug not installed — skipping plugins"
 fi
 
-# 4. COMPLETION SYSTEM
-
-# https://unix.stackexchange.com/a/214699
-# https://thevaluable.dev/zsh-completion-guide-examples/
+## 3. COMPLETION SYSTEM
 
 autoload -Uz compinit
-for dump in "${ZDOTDIR:-$HOME}/.zcompdump"(N.mh+24); do
-  compinit
-done
-compinit -C
+if [[ -n "${ZDOTDIR:-$HOME}/.zcompdump"(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 
 zstyle ':completion:*' menu select  # Enable menu selection for completions
 zstyle ':completion:*' verbose yes  # Show descriptions for completions
@@ -111,19 +91,18 @@ zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompcac
 zstyle ':completion:*' completer _extensions _complete _approximate  # Enable approximate completion
 
 # Set colors for completion
-if [ -x /usr/bin/dircolors ]; then
+if [[ "$OSTYPE" == "linux"* ]] && (( $+commands[dircolors] )); then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
-zstyle ':completion:*:descriptions' format "$fg[green]-- %d --$reset_color"
-zstyle ':completion:*:corrections' format "$fg[yellow]-- %d (errors: %e) --$reset_color"
-zstyle ':completion:*:messages' format "$fg[purple]-- %d --$reset_color"
-zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
+zstyle ':completion:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*:corrections' format '%F{yellow}-- %d (errors: %e) --%f'
+zstyle ':completion:*:messages' format '%F{magenta}-- %d --%f'
+zstyle ':completion:*:warnings' format '%F{red}No matches for:%f %d'
 zstyle ':completion:*' group-name ''
 
-# 5. EXTERNAL TOOL INTEGRATIONS
+## 4. EXTERNAL TOOL INTEGRATIONS
 
-# Load Powerlevel10k theme configuration if it exists
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Initialize fzf key bindings and fuzzy completion
@@ -135,10 +114,12 @@ fi
 if command -v uv &>/dev/null; then
     _uv_comp_cache="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/_uv_completion"
     if [[ ! -f "$_uv_comp_cache" ]] || [[ "$(command -v uv)" -nt "$_uv_comp_cache" ]]; then
+        mkdir -p "${_uv_comp_cache:h}"
         uv generate-shell-completion zsh >| "$_uv_comp_cache"
     fi
     source "$_uv_comp_cache"
     unset _uv_comp_cache
+    
     # Fix completions for uv run to autocomplete .py files
     _uv_run_mod() {
         if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
@@ -150,36 +131,31 @@ if command -v uv &>/dev/null; then
     compdef _uv_run_mod uv
 fi
 
-# Initialize bun completions
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
-# 6. ALIASES & FUNCTIONS
+## 5. ALIASES & FUNCTIONS
 
 alias cls='clear'
 alias md='mkdir -p'
 command -v batcat >/dev/null && alias bat='batcat'
 command -v ipython >/dev/null && alias ipy='ipython'
 
-# 7. CUSTOM FUNCTIONS
+## 6. CUSTOM FUNCTIONS
 
-autoload -Uz colors && colors
+tat() {
+    local name=${PWD:t:gs/.//}
 
-# tat: tmux attach
-function tat {
-    local name=$(basename "$PWD" | tr -d '.')
-
-    if tmux ls 2>&1 | grep -q "$name"; then
+    if tmux has-session -t "$name" 2>/dev/null; then
         tmux attach -t "$name"
-    elif [ -f .envrc ]; then
+    elif [[ -f .envrc ]]; then
         direnv exec / tmux new-session -s "$name"
     else
         tmux new-session -s "$name"
     fi
 }
 
-function zdir() {
-    zparseopts -D -E h=help
-    if [[ "$help" ]]; then
+zdir() {
+    if [[ "$1" == (-h|--help) ]]; then
         print -P "%F{yellow}Usage:%f zdir [directory] (output_file)"
         print "Zips the directory into a zip file"
         return 0
@@ -195,16 +171,15 @@ function zdir() {
     local zip_name=${2:-${dir_name}.zip}
 
     if zip -r -q -9 "$zip_name" "$dir_raw" -x "*.DS_Store" -x "**/__MACOSX" -x "**/.git/*"; then
-        print -P "%B%F{cyan} $dir_raw%f %F{white}󱦰%f %F{green} $zip_name%f%b"
+        print -P "%B%F{cyan} $dir_raw%f %F{white}󱦰%f %F{green} $zip_name%f%b"
     else
         print -P "%F{red}Error:%f Failed to zip '$dir_raw'"
         return 1
     fi
 }
 
-function dsize() {
-    zparseopts -D -E h=help
-    if [[ "$help" ]]; then
+dsize() {
+    if [[ "$1" == (-h|--help) ]]; then
         print -P "%F{yellow}Usage:%f dsize [directory]"
         print "Prints the size of the directory and its contents"
         print "If no directory is provided, the current directory is used"
@@ -212,27 +187,22 @@ function dsize() {
     fi
 
     local dir_name=${1:-.}
-
-    # Cache the du output
     local du_output
     du_output=$(du -d 1 -h "$dir_name" 2>/dev/null)
 
-    # Folders
-    # Only process if there is more than one entry
-    if [ "$(printf '%s\n' "$du_output" | wc -l)" -gt 1 ]; then
+    if (( $(printf '%s\n' "$du_output" | wc -l) > 1 )); then
         printf '%s\n' "$du_output" |
         sort -rh |
         while read -r line; do
-            echo "$fg_bold[cyan]󰉋$reset_color $line"
+            print -P "%B%F{cyan}󰉋%f%b $line"
         done
     fi
 
-    # Files
     if [[ -n "$(find "$dir_name" -maxdepth 1 -type f -print -quit 2>/dev/null)" ]]; then
         find "$dir_name" -maxdepth 1 -type f -exec du -h {} + 2>/dev/null |
             sort -rh |
             while read -r line; do
-                echo "$fg_bold[green]$reset_color $line"
+                print -P "%B%F{green}%f%b $line"
             done
     fi
 }
