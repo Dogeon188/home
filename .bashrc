@@ -5,6 +5,9 @@ case $- in
       *) return;;
 esac
 
+# ble.sh — syntax highlighting, autosuggestions, enhanced line editing
+[[ -s ~/.local/share/blesh/ble.sh ]] && source ~/.local/share/blesh/ble.sh --noattach
+
 ## 1. ENVIRONMENT VARIABLES
 
 export LANG=en_US.UTF-8
@@ -61,6 +64,16 @@ shopt -s globstar 2>/dev/null  # ** recursive glob (bash 4+)
 shopt -s cdspell        # Autocorrect minor cd typos
 shopt -s dirspell 2>/dev/null  # Autocorrect directory name typos in completion
 
+# Readline completion enhancements (zsh completion styles equivalent)
+bind 'set show-all-if-ambiguous on'
+bind 'set completion-ignore-case on'
+bind 'set colored-stats on'
+bind 'set colored-completion-prefix on'
+bind 'set mark-symlinked-directories on'
+bind 'set visible-stats on'
+bind 'TAB:menu-complete'
+bind '"\e[Z":menu-complete-backward'
+
 ## 4. COMPLETION SYSTEM
 
 if [[ -r /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
@@ -95,10 +108,15 @@ fi
 
 # Initialize fzf key bindings and fuzzy completion
 if command -v fzf >/dev/null; then
-    eval "$(fzf --bash 2>/dev/null)" || {
-        # Fallback for older fzf without --bash
-        [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
-    }
+    if [[ ${BLE_VERSION-} ]]; then
+        # Use ble.sh's fzf integration to avoid compatibility issues
+        ble-import -d integration/fzf-completion
+        ble-import -d integration/fzf-key-bindings
+    else
+        eval "$(fzf --bash 2>/dev/null)" || {
+            [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
+        }
+    fi
 fi
 
 # Initialize uv completion
@@ -110,6 +128,20 @@ if command -v uv &>/dev/null; then
     fi
     source "$_uv_comp_cache"
     unset _uv_comp_cache
+
+    # Wrap uv completion to autocomplete .py files for `uv run`
+    __uv_orig_comp=$(complete -p uv 2>/dev/null | sed 's/.*-F \([^ ]*\).*/\1/')
+    if [[ -n "$__uv_orig_comp" ]]; then
+        _uv_run_wrapper() {
+            if [[ "${COMP_WORDS[1]}" == "run" && "${COMP_WORDS[COMP_CWORD]}" != -* ]]; then
+                local cur="${COMP_WORDS[COMP_CWORD]}"
+                COMPREPLY=( $(compgen -f -X '!*.py' -- "$cur") $(compgen -d -- "$cur") )
+            else
+                "$__uv_orig_comp" "$@"
+            fi
+        }
+        complete -F _uv_run_wrapper uv
+    fi
 fi
 
 # Initialize bun completions
@@ -122,6 +154,15 @@ fi
 if command -v zoxide >/dev/null; then
     eval "$(zoxide init bash)"
 fi
+
+# Colored man pages (oh-my-zsh colored-man-pages equivalent)
+export LESS_TERMCAP_mb=$'\e[1;31m'
+export LESS_TERMCAP_md=$'\e[1;36m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;44;33m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[1;32m'
+export LESS_TERMCAP_ue=$'\e[0m'
 
 # eza aliases (replacement for zsh-eza plugin)
 if command -v eza &>/dev/null; then
@@ -142,6 +183,7 @@ alias egrep='egrep --color=auto'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 command -v batcat >/dev/null && alias bat='batcat'
 command -v ipython >/dev/null && alias ipy='ipython'
+alias als='alias | sort'
 
 ## 7. CUSTOM FUNCTIONS
 
@@ -227,6 +269,14 @@ dsize() {
     fi
 }
 
+# macOS utilities (oh-my-zsh macos plugin equivalent)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ofd() { open "${1:-.}"; }
+    cdf() { cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)' 2>/dev/null)" || return; }
+fi
+
 ## 8. LOCAL ENVIRONMENT
 
 [[ -s "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
+
+[[ ${BLE_VERSION-} ]] && ble-attach
