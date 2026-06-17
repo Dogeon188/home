@@ -1,10 +1,8 @@
 # Home Directory Config
 
-This repository contains necessary configuration files for setting up a good-looking and functional Z-shell environment.
+Configuration files for a functional shell environment. Supports both **Zsh** and **Bash**.
 
 ## Installation
-
-Should use ZSH as the default shell.
 
 ```sh
 cd ~
@@ -15,29 +13,48 @@ git checkout -b main --track origin/main
 git reset origin/main
 ```
 
-Then set up tmux packages:
+### Change Shell
 
-- Install Tmux Plugin Manager (TPM) if not already installed:
+1. Install Zsh or Bash if not already installed.
+2. Change your default shell:
 
-  ```sh
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  ```
+   ```sh
+   chsh -s $(which zsh)  # or $(which bash)
+   ```
 
-- Start tmux and run `prefix + I` to install the plugins.
+### Tmux
 
-## Content
+1. Install [TPM](https://github.com/tmux-plugins/tpm):
 
-- Uses [`zplug`](https://github.com/zplug/zplug) for plugin management.
-- Uses [`p10k`](https://github.com/romkatv/powerlevel10k) for theming.
-- Assumes the following programs are installed:
-  - `zsh`
-  - `zplug`
-  - `tmux`
-  - `git`
-  - [`tpm`](https://github.com/tmux-plugins/tpm) - Tmux plugin manager
-  - [`uv`](https://docs.astral.sh/uv/) - Modern Python package manager
-  - [`bun`](https://bun.com) - JavaScript runtime
-  - [`fzf`](https://github.com/junegunn/fzf) - Fuzzy finder
-  - [`eza`](https://github.com/eza-community/eza) - Modern replacement for `ls`
-  - [`zoxide`](https://github.com/ajeetdsouza/zoxide) - Smart directory navigation
-  - [`batcat`](https://github.com/sharkdp/bat?tab=readme-ov-file#installation) - Cat clone with syntax highlighting
+   ```sh
+   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+   ```
+
+2. Start tmux and press `prefix + I` to install plugins.
+
+## What's Included
+
+| File         | Description                                                                                                          |
+| ------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `.zshrc`     | Zsh config — [zplug](https://github.com/zplug/zplug) plugins, [p10k](https://github.com/romkatv/powerlevel10k) theme |
+| `.bashrc`    | Bash config — [Starship](https://starship.rs) prompt, eza aliases                                                    |
+| `.p10k.zsh`  | Powerlevel10k theme settings (Zsh only)                                                                              |
+| `.tmux.conf` | Tmux config with TPM plugins                                                                                         |
+
+### Dependencies
+
+Core: `git`, `tmux`, [`tpm`](https://github.com/tmux-plugins/tpm)
+
+Shell-specific:
+
+- **Zsh**: `zsh`, [`zplug`](https://github.com/zplug/zplug)
+- **Bash**: [`starship`](https://starship.rs) (optional, falls back to git-aware prompt)
+
+Optional tools (both shells benefit from these):
+
+- [`uv`](https://docs.astral.sh/uv/) — Python package manager
+- [`bun`](https://bun.com) — JavaScript runtime
+- [`fzf`](https://github.com/junegunn/fzf) — Fuzzy finder
+- [`eza`](https://github.com/eza-community/eza) — Modern `ls` replacement
+- [`zoxide`](https://github.com/ajeetdsouza/zoxide) — Smart `cd`
+- [`bat`](https://github.com/sharkdp/bat) — `cat` with syntax highlighting

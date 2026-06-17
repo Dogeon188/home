@@ -1,3 +1,4 @@
 {
-    "git.autoRepositoryDetection": false
+    "git.autoRepositoryDetection": false, // avoid subdirectories to track up here and mess up the git status
+    "explorer.excludeGitIgnore": true
 }
