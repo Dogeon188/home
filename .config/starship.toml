@@ -4,7 +4,7 @@
 # Inserts a blank line between shell prompts
 add_newline = true
 
-format = '$os$all $status$line_break$character'
+format = '$os$all${custom.slurm} $status$line_break$character'
 
 # Disable the package module, hiding it from the prompt completely
 [package]
@@ -32,3 +32,10 @@ format = '[$ssh_symbol$hostname]($style) '
 
 [username]
 format = '[$user]($style)'
+
+[custom.slurm]
+command = '''squeue --me -h -o "%i %b %N" 2>/dev/null | while read id gres node; do gpus=${gres##*:}; total=$(scontrol show node "$node" 2>/dev/null | grep -oP "(?<=gres/gpu=)\d+" | head -1); echo "#${id} 󰢮${gpus}/${total:-?}"; done | paste -sd "," -'''
+when = 'squeue --me -h | grep -q .'
+format = '[$output]($style) '
+style = 'bold green'
+shell = ['bash', '--norc', '--noprofile']
