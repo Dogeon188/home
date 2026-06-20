@@ -34,8 +34,9 @@ format = '[$ssh_symbol$hostname]($style) '
 format = '[$user]($style)'
 
 [custom.slurm]
-command = '''c="/tmp/.slurm_gpu_max_$(id -u)"; [ -f "$c" ] && [ $(($(date +%s)-$(stat -c %Y "$c"))) -lt 3600 ] && max=$(<"$c") || { max=$(sacctmgr show user $(whoami) withassoc format=QOS -n -P 2>/dev/null | head -1 | xargs -I{} sacctmgr show qos {} format=MaxTRESPU -n -P 2>/dev/null | grep -oP "(?<=gres/gpu=)\d+"); echo "$max" > "$c"; }; squeue --me -h -o "%i %b" 2>/dev/null | while read id gres; do gpus=${gres##*:}; echo "#${id} 󰢮${gpus}/${max:-?}"; done | paste -sd "," -'''
+command = '''c="/tmp/.slurm_gpu_max_$(id -u)"; [ -f "$c" ] && [ $(($(date +%s)-$(stat -c %Y "$c"))) -lt 3600 ] && max=$(<"$c") || { max=$(sacctmgr show user $(whoami) withassoc format=QOS -n -P 2>/dev/null | head -1 | xargs -I{} sacctmgr show qos {} format=MaxTRESPU -n -P 2>/dev/null | grep -oP "(?<=gres/gpu=)\d+"); echo "$max" > "$c"; }; jobs=$(squeue --me -h -o "%i %b" 2>/dev/null | while read id gres; do gpus=${gres##*:}; echo "#${id}󰢮${gpus}"; done | paste -sd "," -); echo "${jobs} /${max:-?}"'''
 when = 'squeue --me -h | grep -q .'
 format = '[$output]($style) '
 style = 'bold green'
 shell = ['bash', '--norc', '--noprofile']
+ignore_timeout = true
