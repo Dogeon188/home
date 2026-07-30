@@ -107,7 +107,10 @@ zstyle ':completion:*' group-name ''
 
 # Initialize fzf key bindings and fuzzy completion
 if command -v fzf >/dev/null; then
-    source <(fzf --zsh)
+    source <(fzf --zsh) 2>/dev/null || {
+        source /usr/share/doc/fzf/examples/key-bindings.zsh
+        source /usr/share/doc/fzf/examples/completion.zsh
+    }
 fi
 
 # Initialize uv completion
@@ -132,6 +135,9 @@ if command -v uv &>/dev/null; then
 fi
 
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
+
+# OpenClaw Completion
+source "$HOME/.openclaw/completions/openclaw.zsh"
 
 ## 5. ALIASES & FUNCTIONS
 
@@ -206,3 +212,6 @@ dsize() {
             done
     fi
 }
+
+# bun completions
+[ -s "/home/dogeon/.bun/_bun" ] && source "/home/dogeon/.bun/_bun"
