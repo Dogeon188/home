@@ -139,9 +139,6 @@ fi
 
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
-# OpenClaw Completion
-source "$HOME/.openclaw/completions/openclaw.zsh"
-
 ## 5. ALIASES & FUNCTIONS
 
 alias cls='clear'
