@@ -157,9 +157,9 @@ tat() {
     if tmux has-session -t "$name" 2>/dev/null; then
         tmux attach -t "$name"
     elif [[ -f .envrc ]]; then
-        direnv exec / tmux new-session -s "$name"
+        direnv exec / tmux new-session -s "$name" -c "$PWD"
     else
-        tmux new-session -s "$name"
+        tmux new-session -s "$name" -c "$PWD"
     fi
 }
 
