@@ -107,10 +107,13 @@ zstyle ':completion:*' group-name ''
 
 # Initialize fzf key bindings and fuzzy completion
 if command -v fzf >/dev/null; then
-    source <(fzf --zsh) 2>/dev/null || {
+    if _fzf_init=$(fzf --zsh 2>/dev/null); then
+        eval "$_fzf_init"
+    else
         source /usr/share/doc/fzf/examples/key-bindings.zsh
         source /usr/share/doc/fzf/examples/completion.zsh
-    }
+    fi
+    unset _fzf_init
 fi
 
 # Initialize uv completion
