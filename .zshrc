@@ -139,6 +139,10 @@ fi
 
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
+# nvm (completion comes from zsh-users/zsh-completions' _nvm, not nvm's bash_completion)
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+
 # OpenClaw Completion
 source "$HOME/.openclaw/completions/openclaw.zsh"
 
@@ -215,6 +219,3 @@ dsize() {
             done
     fi
 }
-
-# bun completions
-[ -s "/home/dogeon/.bun/_bun" ] && source "/home/dogeon/.bun/_bun"
