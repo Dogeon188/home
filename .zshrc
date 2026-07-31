@@ -143,9 +143,6 @@ fi
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 
-# OpenClaw Completion
-source "$HOME/.openclaw/completions/openclaw.zsh"
-
 ## 5. ALIASES & FUNCTIONS
 
 alias cls='clear'
