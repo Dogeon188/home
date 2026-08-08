@@ -80,6 +80,7 @@ fi
 ## 3. COMPLETION SYSTEM
 
 autoload -Uz compinit
+setopt extendedglob  # required for the (#q...) glob qualifier below
 if [[ -n "${ZDOTDIR:-$HOME}/.zcompdump"(#qN.mh+24) ]]; then
     compinit
 else
@@ -145,7 +146,7 @@ fi
 
 # nvm (completion comes from zsh-users/zsh-completions' _nvm, not nvm's bash_completion)
 export NVM_DIR="$HOME/.config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh" --no-use
 
 ## 5. ALIASES & FUNCTIONS
 
