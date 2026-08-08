@@ -93,9 +93,22 @@ fi
 
 ## 5. EXTERNAL TOOL INTEGRATIONS
 
+# Cache a tool's shell-init output; regenerate only when the binary is newer.
+_BASH_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/bash"
+[[ -d $_BASH_CACHE ]] || mkdir -p "$_BASH_CACHE"
+_cache_init() {
+    local f="$_BASH_CACHE/$1"; shift
+    local bin; bin=$(command -v "$1") || return 1
+    if [[ ! -s $f || $bin -nt $f ]]; then
+        "$@" >| "$f" 2>/dev/null || { rm -f "$f"; return 1; }
+    fi
+    source "$f"
+}
+
 # Starship prompt (cross-shell replacement for Powerlevel10k)
 if command -v starship >/dev/null; then
-    eval "$(starship init bash)"
+    # --print-full-init skips the stub that would re-exec starship at every startup
+    _cache_init starship starship init bash --print-full-init
 else
     # Fallback: git-aware colored prompt
     _parse_git_branch() {
@@ -113,24 +126,20 @@ if command -v fzf >/dev/null; then
         ble-import -d integration/fzf-completion
         ble-import -d integration/fzf-key-bindings
     else
-        eval "$(fzf --bash 2>/dev/null)" || {
+        _cache_init fzf fzf --bash || {
             [[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
         }
     fi
 fi
 
 # Initialize uv completion
-if command -v uv &>/dev/null; then
-    _uv_comp_cache="${XDG_CACHE_HOME:-$HOME/.cache}/bash/_uv_completion"
-    mkdir -p "$(dirname "$_uv_comp_cache")"
-    if [[ ! -f "$_uv_comp_cache" ]] || [[ "$(command -v uv)" -nt "$_uv_comp_cache" ]]; then
-        uv generate-shell-completion bash >| "$_uv_comp_cache"
-    fi
-    source "$_uv_comp_cache"
-    unset _uv_comp_cache
-
+if _cache_init _uv_completion uv generate-shell-completion bash; then
     # Wrap uv completion to autocomplete .py files for `uv run`
-    __uv_orig_comp=$(complete -p uv 2>/dev/null | sed 's/.*-F \([^ ]*\).*/\1/')
+    _uv_fn_cache="$_BASH_CACHE/_uv_completion_fn"
+    [[ -s $_uv_fn_cache ]] ||
+        complete -p uv 2>/dev/null | sed 's/.*-F \([^ ]*\).*/\1/' >| "$_uv_fn_cache"
+    __uv_orig_comp=$(<"$_uv_fn_cache")
+    unset _uv_fn_cache
     if [[ -n "$__uv_orig_comp" ]]; then
         _uv_run_wrapper() {
             if [[ "${COMP_WORDS[1]}" == "run" && "${COMP_WORDS[COMP_CWORD]}" != -* ]]; then
@@ -151,9 +160,7 @@ if [[ -s "$BUN_INSTALL/_bun" ]]; then
 fi
 
 # Initialize zoxide (if available)
-if command -v zoxide >/dev/null; then
-    eval "$(zoxide init bash)"
-fi
+_cache_init zoxide zoxide init bash
 
 # Colored man pages (oh-my-zsh colored-man-pages equivalent)
 export LESS_TERMCAP_mb=$'\e[1;31m'
