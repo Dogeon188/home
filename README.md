@@ -51,9 +51,12 @@ git branch --set-upstream-to=origin/main
 ### Zsh
 
 ```sh
-# zplug
-curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+# zinit
+git clone --depth 1 https://github.com/zdharma-continuum/zinit.git \
+    ~/.local/share/zinit/zinit.git
 ```
+
+`.zshrc` offers to run this on first start if zinit is missing.
 
 ### Bash
 
@@ -101,7 +104,7 @@ cargo install bat         # Linux
 
 | File         | Description                                                                                                          |
 | ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `.zshrc`     | Zsh config — [zplug](https://github.com/zplug/zplug) plugins, [p10k](https://github.com/romkatv/powerlevel10k) theme |
+| `.zshrc`     | Zsh config — [zinit](https://github.com/zdharma-continuum/zinit) plugins, [p10k](https://github.com/romkatv/powerlevel10k) theme |
 | `.bashrc`    | Bash config — [ble.sh](https://github.com/akinomyoga/ble.sh), [Starship](https://starship.rs) prompt, eza aliases    |
 | `.p10k.zsh`  | Powerlevel10k theme settings (Zsh only)                                                                              |
 | `.tmux.conf` | Tmux config with TPM plugins                                                                                         |
@@ -112,7 +115,7 @@ Core: `git`, `tmux`, [`tpm`](https://github.com/tmux-plugins/tpm)
 
 Shell-specific:
 
-- **Zsh**: `zsh`, [`zplug`](https://github.com/zplug/zplug)
+- **Zsh**: `zsh`, [`zinit`](https://github.com/zdharma-continuum/zinit)
 - **Bash**: [`ble.sh`](https://github.com/akinomyoga/ble.sh) (syntax highlighting + autosuggestions), [`starship`](https://starship.rs) (optional, falls back to git-aware prompt)
 
 Optional tools (both shells benefit from these):
