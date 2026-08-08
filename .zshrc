@@ -72,8 +72,6 @@ if [[ -f $ZINIT_HOME/zinit.zsh ]]; then
         # directory, which an OMZP:: snippet does not fetch
         zinit ice wait lucid depth:1 pick"plugins/macos/macos.plugin.zsh"
         zinit light ohmyzsh/ohmyzsh
-    elif [[ -f /etc/debian_version ]]; then
-        zinit wait lucid for OMZP::apt
     fi
 else
     echo "[zshrc] zinit not installed — skipping plugins"
