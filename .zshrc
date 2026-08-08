@@ -45,11 +45,8 @@ if [[ -f ~/.zplug/init.zsh ]]; then
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
     zplug "zsh-users/zsh-completions"  # Additional completion definitions for various commands
 
-    zplug "plugins/aliases", from:oh-my-zsh  # Use `als` to list all aliases
     zplug "plugins/colored-man-pages", from:oh-my-zsh  # Colorize man
     # zplug "plugins/common-aliases", from:oh-my-zsh  # Common aliases for various commands
-    zplug "plugins/docker", from:oh-my-zsh  # Docker completions and aliases
-    zplug "plugins/emoji", from:oh-my-zsh  # Adds emoji autocompletion
     zplug "plugins/ssh", from:oh-my-zsh  # SSH completions and utility functions
     zplug "plugins/zoxide", from:oh-my-zsh  # Initialize zoxide for fast directory navigation
 
@@ -65,9 +62,7 @@ if [[ -f ~/.zplug/init.zsh ]]; then
         zplug "plugins/apt", from:oh-my-zsh
     fi
 
-    if ! zplug check; then
-        zplug install
-    fi
+    alias zplug-sync='zplug check || zplug install'
     zplug load
 else
     echo "[zshrc] zplug not installed — skipping plugins"
