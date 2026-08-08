@@ -27,45 +27,56 @@ fpath=("$HOME/.zfunc" "$HOME/.zsh/completions" $fpath)
 
 ## 2. PLUGINS
 
-if [[ ! -d ~/.zplug ]]; then
-    printf "Install zplug? [y/N]: "
+ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
+
+if [[ ! -d $ZINIT_HOME ]]; then
+    printf "Install zinit? [y/N]: "
     if read -q; then
-        curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+        mkdir -p "${ZINIT_HOME:h}"
+        git clone --depth 1 https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
     fi
 fi
 
-if [[ -f ~/.zplug/init.zsh ]]; then
-    source ~/.zplug/init.zsh
+if [[ -f $ZINIT_HOME/zinit.zsh ]]; then
+    source "$ZINIT_HOME/zinit.zsh"
 
-    zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-    zplug "romkatv/powerlevel10k", as:theme, depth:1  # Powerlevel10k theme
-    zplug "MichaelAquilina/zsh-you-should-use"  # Suggest aliases when you type a command that has an alias
-    zplug "ocodo/ollama_zsh_completion"  # Ollama completions for zsh
-    zplug "zsh-users/zsh-autosuggestions"  # Suggest commands as you type based on history and completions
-    zplug "zsh-users/zsh-syntax-highlighting", defer:2
-    zplug "zsh-users/zsh-completions"  # Additional completion definitions for various commands
+    zinit ice depth:1
+    zinit light romkatv/powerlevel10k
 
-    zplug "plugins/colored-man-pages", from:oh-my-zsh  # Colorize man
-    # zplug "plugins/common-aliases", from:oh-my-zsh  # Common aliases for various commands
-    zplug "plugins/ssh", from:oh-my-zsh  # SSH completions and utility functions
-    zplug "plugins/zoxide", from:oh-my-zsh  # Initialize zoxide for fast directory navigation
+    # `wait lucid` = turbo: loads in the background once the prompt is up
+    zinit wait lucid for \
+        MichaelAquilina/zsh-you-should-use \
+        ocodo/ollama_zsh_completion \
+        atload'_zsh_autosuggest_start' \
+            zsh-users/zsh-autosuggestions \
+        atload'zicdreplay' \
+            zsh-users/zsh-syntax-highlighting
+
+    # Eager: only appends to fpath, which has to happen before compinit below
+    zinit ice blockf
+    zinit light zsh-users/zsh-completions
+
+    zinit wait lucid for \
+        OMZP::colored-man-pages \
+        OMZP::ssh \
+        OMZP::zoxide
 
     if command -v eza &>/dev/null; then
-        zplug "z-shell/zsh-eza"
+        zinit wait lucid for z-shell/zsh-eza
     else
         printf "eza not found, skipping zsh-eza plugin. Install it from https://github.com/eza-community/eza \n"
     fi
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        zplug "plugins/macos", from:oh-my-zsh
+        # macos.plugin.zsh sources siblings (music, spotify) from its own
+        # directory, which an OMZP:: snippet does not fetch
+        zinit ice wait lucid depth:1 pick"plugins/macos/macos.plugin.zsh"
+        zinit light ohmyzsh/ohmyzsh
     elif [[ -f /etc/debian_version ]]; then
-        zplug "plugins/apt", from:oh-my-zsh
+        zinit wait lucid for OMZP::apt
     fi
-
-    alias zplug-sync='zplug check || zplug install'
-    zplug load
 else
-    echo "[zshrc] zplug not installed — skipping plugins"
+    echo "[zshrc] zinit not installed — skipping plugins"
 fi
 
 ## 3. COMPLETION SYSTEM
