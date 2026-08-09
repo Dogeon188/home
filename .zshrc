@@ -152,6 +152,7 @@ export NVM_DIR="$HOME/.config/nvm"
 
 alias cls='clear'
 alias md='mkdir -p'
+alias ta='tmux attach'
 command -v batcat >/dev/null && alias bat='batcat'
 command -v ipython >/dev/null && alias ipy='ipython'
 
