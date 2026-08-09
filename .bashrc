@@ -184,6 +184,7 @@ fi
 
 alias cls='clear'
 alias md='mkdir -p'
+alias ta='tmux attach'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
