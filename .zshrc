@@ -222,3 +222,6 @@ dsize() {
             done
     fi
 }
+
+# Machine-local overrides, untracked — shared with .bashrc
+[[ -s ~/.shrc.local ]] && source ~/.shrc.local
