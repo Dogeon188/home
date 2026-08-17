@@ -288,3 +288,6 @@ fi
 [[ -s "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
 [[ ${BLE_VERSION-} ]] && ble-attach
+
+# Machine-local overrides, untracked — shared with .zshrc
+[[ -s ~/.shrc.local ]] && source ~/.shrc.local
