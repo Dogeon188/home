@@ -13,3 +13,6 @@
 !.tmux.conf
 !.config
 !.config/starship.toml
+
+!.claude
+!.claude/statusline-command.sh
