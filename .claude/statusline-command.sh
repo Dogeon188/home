@@ -103,10 +103,16 @@ for window in five_hour:5h seven_day:7d; do
         "$label" "$pct" "$when")"
 done
 
+# --- Segment 5: session cost ---
+cost_seg=""
+cost=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
+[ -n "$cost" ] && cost_seg=$(printf '\033[38;5;108m$%.2f\033[0m' "$cost")
+
 # --- Assemble ---
 out="$host_seg  $cwd_seg"
 [ -n "$git_seg" ] && out="$out  $git_seg"
 [ -n "$ctx_seg" ] && out="$out  $ctx_seg"
 [ -n "$reset_seg" ] && out="$out  $reset_seg"
+[ -n "$cost_seg" ] && out="$out  $cost_seg"
 
 printf '%s' "$out"
