@@ -7,7 +7,8 @@ input=$(cat)
 printf '%s' "$input" >"$HOME/.claude/statusline-cache.tmp.json"
 
 # --- Segment 0: hostname ---
-host_seg=$(printf '\033[38;5;108m%s\033[0m' "${HOSTNAME%%.*}")
+host="${HOSTNAME%%.*}"
+host_seg=$(printf '\033[38;5;175m%s\033[0m' "${host:0:8}")
 
 # --- Segment 1: cwd (abbreviated with ~ for $HOME) ---
 cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd')
@@ -16,7 +17,7 @@ case "$cwd" in
     "$HOME") cwd_display="~" ;;
     "$HOME"/*) cwd_display="~${cwd#$HOME}" ;;
 esac
-cwd_seg=$(printf '\033[1;38;5;33m%s\033[0m' "$cwd_display")
+cwd_seg=$(printf '\033[1;38;5;39m%s\033[0m' "$cwd_display")
 
 # --- Segment 2: git status ---
 git_seg=""
@@ -39,9 +40,9 @@ if git -C "$cwd" --no-optional-locks rev-parse --is-inside-work-tree >/dev/null 
     fi
 
     if [ -n "$dirty" ]; then
-        git_color='\033[38;5;178m'   # yellow: dirty
+        git_color='\033[38;5;179m'   # amber: dirty
     else
-        git_color='\033[38;5;71m'    # green: clean
+        git_color='\033[38;5;114m'   # green: clean
     fi
     git_seg=$(printf "${git_color}%s%s%s\033[0m" "$branch" "$dirty" "$ahead_behind")
 fi
@@ -60,11 +61,11 @@ if [ -n "$tokens" ]; then
     fi
 
     if [ "$pct" -ge 80 ]; then
-        ctx_color='\033[38;5;167m'   # red
+        ctx_color='\033[38;5;174m'   # red
     elif [ "$pct" -ge 50 ]; then
-        ctx_color='\033[38;5;178m'   # yellow
+        ctx_color='\033[38;5;179m'   # amber
     else
-        ctx_color='\033[38;5;71m'    # green
+        ctx_color='\033[38;5;116m'   # cyan
     fi
     ctx_seg=$(printf "${ctx_color}%s tok (%s%%)\033[0m" "$tokens_display" "$pct")
 fi
@@ -83,20 +84,22 @@ for window in five_hour:5h seven_day:7d; do
     [ -n "$resets_at" ] || continue
 
     # today's reset shows a bare clock time; a later day gets a weekday
-    [ "$(date -d "@$resets_at" +%j)" = "$(date +%j)" ] && fmt='%H:%M' || fmt='%a %H:%M'
-    when=$(date -d "@$resets_at" "+$fmt")
+    # BSD date wants -r <epoch>; GNU date wants -d @<epoch> (its -r takes a file)
+    epoch_fmt() { date -r "$1" "+$2" 2>/dev/null || date -d "@$1" "+$2"; }
+    [ "$(epoch_fmt "$resets_at" %j)" = "$(date +%j)" ] && fmt='%H:%M' || fmt='%a %H:%M'
+    when=$(epoch_fmt "$resets_at" "$fmt")
 
     # highlight on how much of the window is spent, not how soon it resets
     if [ "$pct" -ge 80 ]; then
-        pct_color='\033[38;5;167m'   # red
+        pct_color='\033[38;5;174m'   # red
     elif [ "$pct" -ge 50 ]; then
-        pct_color='\033[38;5;178m'   # yellow
+        pct_color='\033[38;5;179m'   # amber
     else
-        pct_color='\033[38;5;71m'    # green
+        pct_color='\033[38;5;146m'   # periwinkle
     fi
 
     [ -n "$reset_seg" ] && reset_seg="$reset_seg$(printf '\033[38;5;240m · \033[0m')"
-    reset_seg="$reset_seg$(printf "\033[38;5;244m%s\033[0m ${pct_color}%s%%\033[0m \033[38;5;240m⟳\033[0m \033[38;5;244m%s\033[0m" \
+    reset_seg="$reset_seg$(printf "\033[38;5;141m%s\033[0m ${pct_color}%s%%\033[0m \033[38;5;240m⟳\033[0m \033[38;5;245m%s\033[0m" \
         "$label" "$pct" "$when")"
 done
 
