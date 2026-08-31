@@ -60,9 +60,10 @@ if [ -n "$tokens" ]; then
         tokens_display="$tokens"
     fi
 
-    if [ "$pct" -ge 80 ]; then
+    remaining=$((100 - pct))
+    if [ "$remaining" -le 20 ]; then
         ctx_color='\033[38;5;174m'   # red
-    elif [ "$pct" -ge 50 ]; then
+    elif [ "$remaining" -le 49 ]; then
         ctx_color='\033[38;5;179m'   # amber
     else
         ctx_color='\033[38;5;116m'   # cyan
@@ -89,16 +90,17 @@ for window in five_hour:5h seven_day:7d; do
     [ "$(epoch_fmt "$resets_at" %j)" = "$(date +%j)" ] && fmt='%H:%M' || fmt='%a %H:%M'
     when=$(epoch_fmt "$resets_at" "$fmt")
 
-    # highlight on how much of the window is spent, not how soon it resets
-    if [ "$pct" -ge 80 ]; then
+    # color on how much of the window is LEFT
+    remaining=$((100 - pct))
+    if [ "$remaining" -le 20 ]; then
         pct_color='\033[38;5;174m'   # red
-    elif [ "$pct" -ge 50 ]; then
+    elif [ "$remaining" -le 49 ]; then
         pct_color='\033[38;5;179m'   # amber
     else
         pct_color='\033[38;5;146m'   # periwinkle
     fi
 
-    [ -n "$reset_seg" ] && reset_seg="$reset_seg$(printf '\033[38;5;240m · \033[0m')"
+    [ -n "$reset_seg" ] && reset_seg="$reset_seg  "
     reset_seg="$reset_seg$(printf "\033[38;5;141m%s\033[0m ${pct_color}%s%%\033[0m \033[38;5;240m⟳\033[0m \033[38;5;245m%s\033[0m" \
         "$label" "$pct" "$when")"
 done
