@@ -64,9 +64,15 @@ git clone --depth 1 https://github.com/zdharma-continuum/zinit.git \
 # ble.sh
 git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
 make -C ble.sh install PREFIX=~/.local
+```
 
+```sh
 # starship
+mkdir -p ~/.local/bin
 curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir ~/.local/bin
+```
+
+```sh
 # OR
 cargo install starship --locked
 ```
