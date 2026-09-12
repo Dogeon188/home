@@ -277,6 +277,21 @@ dsize() {
     fi
 }
 
+kill-vscode-server() {
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        printf "${_YELLOW}Usage:${_RESET} kill-vscode-server\n"
+        echo "Kills all running VS Code server processes"
+        return 0
+    fi
+
+    if pkill -9 -u "$(whoami)" -f vscode-server; then
+        printf "${_GREEN}Killed VS Code server processes.${_RESET}\n"
+    else
+        printf "${_YELLOW}No VS Code server processes found.${_RESET}\n"
+    fi
+}
+
+
 # macOS utilities (oh-my-zsh macos plugin equivalent)
 if [[ "$OSTYPE" == "darwin"* ]]; then
     ofd() { open "${1:-.}"; }

@@ -223,5 +223,20 @@ dsize() {
     fi
 }
 
+
+kill-vscode-server() {
+    if [[ "$1" == (-h|--help) ]]; then
+        print -P "%F{yellow}Usage:%f kill-vscode-server"
+        print "Kills all running VS Code server processes"
+        return 0
+    fi
+
+    if pkill -9 -u "$(whoami)" -f vscode-server; then
+        print -P "%F{green}Killed VS Code server processes.%f"
+    else
+        print -P "%F{yellow}No VS Code server processes found.%f"
+    fi
+}
+
 # Machine-local overrides, untracked — shared with .bashrc
 [[ ! -s ~/.shrc.local ]] || source ~/.shrc.local
