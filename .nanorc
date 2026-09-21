@@ -1,5 +1,7 @@
-bind M-Left prevword all
-bind M-Right nextword all
+# ponytail: Ghostty sends Alt+Left/Right as ESC b / ESC f (readline word-move
+# convention), not arrow-key sequences, so M-Left/M-Right never matched.
+bind M-B prevword all
+bind M-F nextword all
 
 # ponytail: no native "move line" function in nano; macro emulates it via
 # cut+move+paste. Cursor column resets to 0 on the moved line; edge cases at
