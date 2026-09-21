@@ -5,15 +5,15 @@ case $- in
       *) return;;
 esac
 
-# ble.sh — syntax highlighting, autosuggestions, enhanced line editing
-[[ -s ~/.local/share/blesh/ble.sh ]] && source ~/.local/share/blesh/ble.sh --noattach
-
 ## 1. ENVIRONMENT VARIABLES
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export EDITOR='nano'
+
+# ble.sh — syntax highlighting, autosuggestions, enhanced line editing
+[[ -s ~/.local/share/blesh/ble.sh ]] && source ~/.local/share/blesh/ble.sh --noattach
 
 # History config
 HISTSIZE=10000
