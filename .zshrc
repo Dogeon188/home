@@ -238,5 +238,11 @@ kill-vscode-server() {
     fi
 }
 
+# Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config)
+ssh() {
+    command ssh "$@"
+    printf '\e]111;\a\e]110;\a'
+}
+
 # Machine-local overrides, untracked — shared with .bashrc
 [[ ! -s ~/.shrc.local ]] || source ~/.shrc.local
