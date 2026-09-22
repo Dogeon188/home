@@ -238,6 +238,19 @@ kill-vscode-server() {
     fi
 }
 
+# Show an image inline via the kitty graphics protocol
+icat() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        chafa -f kitty "$@"
+    elif command -v kitten >/dev/null 2>&1; then
+        kitten icat "$@"
+    else
+        echo "icat: kitten not found. Install with:" >&2
+        echo "  curl -fsSL https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin dest=~/.local launch=n && ln -sfn ~/.local/kitty.app/bin/kitten ~/.local/bin/kitten" >&2
+        return 127
+    fi
+}
+
 # Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config)
 ssh() {
     command ssh "$@"
