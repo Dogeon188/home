@@ -238,11 +238,11 @@ kill-vscode-server() {
     fi
 }
 
-# Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config)
-ssh() {
-    command ssh "$@"
-    printf '\e]111;\a\e]110;\a'
-}
+# Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config).
+# A precmd hook, not an ssh() wrapper: rsync/scp/git spawn ssh directly, bypassing shell functions.
+_reset_ghostty_colors() { printf '\e]111;\a\e]110;\a' }
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _reset_ghostty_colors
 
 # Machine-local overrides, untracked — shared with .bashrc
 [[ ! -s ~/.shrc.local ]] || source ~/.shrc.local

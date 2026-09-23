@@ -298,6 +298,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     cdf() { cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)' 2>/dev/null)" || return; }
 fi
 
+# Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config).
+# PROMPT_COMMAND, not an ssh() wrapper: rsync/scp/git spawn ssh directly, bypassing shell functions.
+PROMPT_COMMAND="printf '\e]111;\a\e]110;\a';${PROMPT_COMMAND:+ $PROMPT_COMMAND}"
+
 ## 8. LOCAL ENVIRONMENT
 
 [[ -s "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
