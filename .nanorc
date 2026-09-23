@@ -6,8 +6,10 @@ bind M-F nextword all
 # ponytail: no native "move line" function in nano; macro emulates it via
 # cut+move+paste. Cursor column resets to 0 on the moved line; edge cases at
 # buffer start/end may behave oddly. Real fix if that matters: a nano patch.
-bind M-Up "{cut}{up}{paste}{up}" main
-bind M-Down "{cut}{down}{paste}{up}" main
+# Arrow keys cannot be rebound in nano at all (Alt+arrows are hardwired to
+# scrollup/scrolldown), so these use Shift+Alt+U / Shift+Alt+D instead.
+bind Sh-M-U "{cut}{up}{paste}{up}" main
+bind Sh-M-D "{cut}{down}{paste}{up}" main
 
 ## Syntax highlighting for the Ghostty terminal config file.
 syntax ghostty "(^|/)config\.ghostty$"
