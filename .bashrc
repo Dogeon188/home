@@ -313,7 +313,7 @@ fi
 
 # Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config).
 # PROMPT_COMMAND, not an ssh() wrapper: rsync/scp/git spawn ssh directly, bypassing shell functions.
-PROMPT_COMMAND="printf '\e]111;\a\e]110;\a';${PROMPT_COMMAND:+ $PROMPT_COMMAND}"
+PROMPT_COMMAND="[[ -z \$SSH_CONNECTION ]] && printf '\e]111;\a\e]110;\a';${PROMPT_COMMAND:+ $PROMPT_COMMAND}"
 
 ## 8. LOCAL ENVIRONMENT
 

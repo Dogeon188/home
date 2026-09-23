@@ -253,7 +253,7 @@ icat() {
 
 # Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config).
 # A precmd hook, not an ssh() wrapper: rsync/scp/git spawn ssh directly, bypassing shell functions.
-_reset_ghostty_colors() { printf '\e]111;\a\e]110;\a' }
+_reset_ghostty_colors() { [[ -z $SSH_CONNECTION ]] && printf '\e]111;\a\e]110;\a' }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _reset_ghostty_colors
 
