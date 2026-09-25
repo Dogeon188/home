@@ -25,7 +25,10 @@ Back up anything you want to keep, then apply:
 ```sh
 git reset --hard origin/main
 git branch --set-upstream-to=origin/main
+git config core.hooksPath .githooks
 ```
+
+The last line enables `.githooks/pre-commit`, which asks for confirmation when you commit from a subdirectory of `~`.
 
 ### Change Shell
 

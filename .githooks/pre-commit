@@ -1,0 +1,17 @@
+#!/bin/sh
+# Confirm before committing to the home repo from a subdirectory of ~.
+# Git chdirs to the repo root before running hooks, so read the cwd of
+# git's parent (the shell that ran `git commit`).
+top=$(git rev-parse --show-toplevel)
+caller=$(ps -o ppid= -p "$PPID" | tr -d ' ')
+cwd=$(readlink "/proc/$caller/cwd" 2>/dev/null) || exit 0
+[ "$cwd" = "$top" ] && exit 0
+# No terminal (IDE, scripts): let it through.
+[ -r /dev/tty ] && exec </dev/tty || exit 0
+
+name=$(basename "$(git remote get-url origin 2>/dev/null || echo "$top")" .git)
+echo "WARNING: you are in $cwd, but this commit goes to the repo at $top." >&2
+git diff --cached --name-status >&2
+printf 'Working in %s. Commit anyway? [y/N] ' "$name" >&2
+read ans
+case "$ans" in [yY]*) exit 0 ;; *) echo "Aborted." >&2; exit 1 ;; esac
