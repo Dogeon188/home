@@ -1,5 +1,5 @@
 #!/bin/bash
-# Claude Code status line: <host> <cwd> <git status> <reset time status>
+# Claude Code status line: <host> <cwd> <git> <model> <ctx> <reset> <cost>
 input=$(cat)
 
 # Cache the payload: rate_limits.{five_hour,seven_day}.resets_at reaches the
@@ -47,7 +47,12 @@ if git -C "$cwd" --no-optional-locks rev-parse --is-inside-work-tree >/dev/null 
     git_seg=$(printf "${git_color}%s%s%s\033[0m" "$branch" "$dirty" "$ahead_behind")
 fi
 
-# --- Segment 3: context window usage (this session) ---
+# --- Segment 3: model name ---
+model_seg=""
+model=$(echo "$input" | jq -r '.model.display_name // empty')
+[ -n "$model" ] && model_seg=$(printf '\033[38;5;183m%s\033[0m' "$model")
+
+# --- Segment 4: context window usage (this session) ---
 ctx_seg=""
 read -r tokens pct <<<"$(echo "$input" | jq -r '.context_window // empty |
     "\((.total_input_tokens // 0) + (.total_output_tokens // 0)) \(.used_percentage // 0)"')"
@@ -71,7 +76,7 @@ if [ -n "$tokens" ]; then
     ctx_seg=$(printf "${ctx_color}%s tok (%s%%)\033[0m" "$tokens_display" "$pct")
 fi
 
-# --- Segment 4: usage-limit reset time ---
+# --- Segment 5: usage-limit reset time ---
 # The status line JSON payload exposes `rate_limits.five_hour.resets_at` and
 # `rate_limits.seven_day.resets_at` (unix epoch seconds), but only once the
 # session is a Claude.ai subscriber session and only after the first API
@@ -105,7 +110,7 @@ for window in five_hour:5h seven_day:7d; do
         "$label" "$pct" "$when")"
 done
 
-# --- Segment 5: session cost ---
+# --- Segment 6: session cost ---
 cost_seg=""
 cost=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
 [ -n "$cost" ] && cost_seg=$(printf '\033[38;5;108m$%.2f\033[0m' "$cost")
@@ -113,6 +118,7 @@ cost=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
 # --- Assemble ---
 out="$host_seg  $cwd_seg"
 [ -n "$git_seg" ] && out="$out  $git_seg"
+[ -n "$model_seg" ] && out="$out  $model_seg"
 [ -n "$ctx_seg" ] && out="$out  $ctx_seg"
 [ -n "$reset_seg" ] && out="$out  $reset_seg"
 [ -n "$cost_seg" ] && out="$out  $cost_seg"
