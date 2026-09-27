@@ -17,7 +17,15 @@ case "$cwd" in
     "$HOME") cwd_display="~" ;;
     "$HOME"/*) cwd_display="~${cwd#$HOME}" ;;
 esac
-cwd_seg=$(printf '\033[1;38;5;39m%s\033[0m' "$cwd_display")
+# keep the folder name whole; trim the leading path to CWD_PREFIX_MAX chars
+CWD_PREFIX_MAX=${CWD_PREFIX_MAX:-10}
+name="${cwd_display##*/}"
+prefix="${cwd_display%"$name"}"
+if [ "${#prefix}" -gt "$CWD_PREFIX_MAX" ]; then
+    prefix="…${prefix: -$CWD_PREFIX_MAX}"
+fi
+[ "$cwd_display" = "/" ] && { prefix="/"; name=""; }
+cwd_seg=$(printf '\033[38;5;245m%s\033[0m\033[1;38;5;39m%s\033[0m' "$prefix" "$name")
 
 # --- Segment 2: git status ---
 git_seg=""
