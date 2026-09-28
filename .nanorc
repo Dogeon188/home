@@ -1,3 +1,7 @@
+# nano grabs the mouse, so tmux (mouse_any_flag set) forwards clicks and wheel
+# to it instead of entering copy-mode. Shift+drag still selects text natively.
+set mouse
+
 # ponytail: Ghostty sends Alt+Left/Right as ESC b / ESC f (readline word-move
 # convention), not arrow-key sequences, so M-Left/M-Right never matched.
 bind M-B prevword all
