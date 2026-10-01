@@ -84,6 +84,18 @@ elif [[ -r /etc/bash_completion ]]; then
     source /etc/bash_completion
 fi
 
+# scp/rsync remote paths: load ssh.bash now (before fzf wraps scp) and patch its lister to
+# skip LocalCommand (pane recolor) and keep a typed `~/` instead of expanding it to /home/...
+# ponytail: string-patches bash-completion's function; if an upgrade reshapes it, patterns miss and stock behavior returns.
+if declare -F _comp_load >/dev/null && _comp_load scp; then
+    _f=$(declare -f _comp_xfunc_scp_compgen_remote_files)
+    _f=${_f//"'Batchmode yes'"/"'Batchmode yes' -o PermitLocalCommand=no"}
+    _f=${_f/'local _path=${cur_val#*:};'/'local _path=${cur_val#*:} _tilde=; if [[ $_path == "~" || $_path == "~/"* ]]; then _tilde=1 _path=${_path#"~"}; _path=./${_path#/}; fi;'}
+    _f=${_f/'2> /dev/null | _comp_cmd_scp__escape_path'/'2> /dev/null | if [[ $_tilde ]]; then sed "s|^\./|~/|"; else cat; fi | _comp_cmd_scp__escape_path'}
+    eval "$_f"
+    unset _f
+fi
+
 # Docker completions (if docker installed)
 if command -v docker &>/dev/null; then
     if [[ -r /opt/homebrew/etc/bash_completion.d/docker ]]; then
