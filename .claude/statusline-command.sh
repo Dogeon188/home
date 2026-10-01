@@ -81,7 +81,7 @@ if [ -n "$tokens" ]; then
     else
         ctx_color='\033[38;5;116m'   # cyan
     fi
-    ctx_seg=$(printf "${ctx_color}%s tok (%s%%)\033[0m" "$tokens_display" "$pct")
+    ctx_seg=$(printf "${ctx_color}✼ %s (%s%%)\033[0m" "$tokens_display" "$pct")
 fi
 
 # --- Segment 5: usage-limit reset time ---
