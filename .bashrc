@@ -12,6 +12,15 @@ export LC_ALL=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export EDITOR='nano'
 
+# nanorc has no OS conditionals and `include` rejects bind lines, so macOS gets
+# a merged rcfile. -f skips the system nanorc, so prepend it for highlighting.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    mkdir -p ~/.cache
+    cat "${HOMEBREW_PREFIX:-/opt/homebrew}/etc/nanorc" ~/.nanorc ~/.nanorc.darwin > ~/.cache/nanorc 2>/dev/null
+    export EDITOR="nano -f $HOME/.cache/nanorc"
+    alias nano="$EDITOR"
+fi
+
 # ble.sh — syntax highlighting, autosuggestions, enhanced line editing
 [[ -s ~/.local/share/blesh/ble.sh ]] && source ~/.local/share/blesh/ble.sh --noattach
 
