@@ -4,5 +4,6 @@ bind M-Up "{cut}{up}{paste}{up}" main
 bind M-Down "{cut}{down}{paste}{up}" main
 
 # Ghostty sends Cmd+Backspace as ^U (readline kill-line), which nano binds to
-# paste. Make it delete the line instead, without touching the cut buffer.
-bind ^U zap main
+# paste. Make it delete from line start to cursor, like readline/macOS, without
+# touching the cut buffer.
+bind ^U "{mark}{home}{zap}" main

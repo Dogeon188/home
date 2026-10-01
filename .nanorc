@@ -1,8 +1,20 @@
 set tabsize 4
 set tabstospaces
-
-# nano grabs the mouse, so tmux (mouse_any_flag set) forwards clicks and wheel
-# to it instead of entering copy-mode. Shift+drag still selects text natively.
+set autoindent
+set linenumbers
+set numbercolor #bbb,#333
+set titlecolor bold,#ddd,#333
+set statuscolor #ddd,#444
+set promptcolor #fff,#444
+set minicolor #aaa,#333
+set errorcolor bold,#fff,#a33
+set selectedcolor #fff,#357
+set spotlightcolor #000,#fc6
+set keycolor bold,#8bf
+set functioncolor #aaa
+set scrollercolor #555
+set guidestripe 80
+set stripecolor ,#222
 set mouse
 
 # ponytail: Ghostty sends Alt+Left/Right as ESC b / ESC f (readline word-move
