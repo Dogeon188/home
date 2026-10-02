@@ -266,5 +266,21 @@ _reset_ghostty_colors() { [[ -z $SSH_CONNECTION ]] && printf '\e]111;\a\e]110;\a
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _reset_ghostty_colors
 
+# nano5's home is over quota, so Ghostty can't install xterm-ghostty terminfo there.
+# Wrap Ghostty's ssh() once its deferred init (first precmd) has defined it.
+_wrap_ghostty_ssh() {
+    (( $+functions[ssh] )) || return
+    add-zsh-hook -d precmd _wrap_ghostty_ssh
+    functions[_ghostty_ssh]=$functions[ssh]
+    ssh() {
+        if [[ " $* " == *" nano5 "* ]]; then
+            TERM=xterm-256color command ssh "$@"
+        else
+            _ghostty_ssh "$@"
+        fi
+    }
+}
+add-zsh-hook precmd _wrap_ghostty_ssh
+
 # Machine-local overrides, untracked — shared with .bashrc
 [[ ! -s ~/.shrc.local ]] || source ~/.shrc.local
