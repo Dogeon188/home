@@ -17,8 +17,5 @@
 !.config
 !.config/starship.toml
 
-!.claude
-!.claude/statusline-command.sh
-
 !.githooks
 !.githooks/pre-commit
