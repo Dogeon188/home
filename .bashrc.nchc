@@ -1,0 +1,87 @@
+# Cut-down .bashrc for NCHC clusters (nano5, Taiwania 3, F1, 晶創26):
+# RHEL, bash 4.4, tiny home quota (1 MB on nano5).
+# Install: rsync ~/.bashrc.nchc <host>:~/.bashrc
+
+## 0. SYSTEM SETUP (above the guard: non-interactive ssh needs module/Lmod too)
+
+[ -f /etc/bashrc ] && . /etc/bashrc
+
+case ":$PATH:" in
+    *:"$HOME/.local/bin":*) ;;
+    *) PATH="$HOME/.local/bin:$HOME/bin:$PATH" ;;
+esac
+export PATH
+
+## 1. INTERACTIVE GUARD
+
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+## 2. ENVIRONMENT VARIABLES
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export EDITOR='nano'
+
+# History: small, the home quota is tiny
+HISTSIZE=1000
+HISTFILESIZE=1000
+HISTCONTROL=ignoreboth:erasedups
+HISTTIMEFORMAT='%F %T '
+shopt -s histappend
+
+## 3. SHELL OPTIONS
+
+shopt -s checkwinsize globstar cdspell dirspell
+
+bind 'set show-all-if-ambiguous on'
+bind 'set completion-ignore-case on'
+bind 'set colored-stats on'
+bind 'set colored-completion-prefix on'
+bind 'set mark-symlinked-directories on'
+bind 'set visible-stats on'
+bind 'TAB:menu-complete'
+bind '"\e[Z":menu-complete-backward'
+
+## 4. PROMPT
+
+_parse_git_branch() {
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
+    printf ' (%s)' "$branch"
+}
+PS1='\[\033[01;35m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(_parse_git_branch)\[\033[00m\]\$ '
+
+# Colored man pages
+export LESS_TERMCAP_mb=$'\e[1;31m'
+export LESS_TERMCAP_md=$'\e[1;36m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;44;33m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[1;32m'
+export LESS_TERMCAP_ue=$'\e[0m'
+
+## 5. ALIASES & FUNCTIONS
+
+alias cls='clear'
+alias md='mkdir -p'
+alias ta='tmux attach'
+alias grep='grep --color=auto'
+alias als='alias | sort'
+
+# tat: attach to (or create) a tmux session named after the current directory
+tat() {
+    local name
+    name=$(basename "$PWD" | tr -d '.')
+    tmux has-session -t "=$name" 2>/dev/null && tmux attach -t "=$name" || tmux new-session -s "$name"
+}
+
+kill-vscode-server() {
+    pkill -9 -u "$(whoami)" -f vscode-server && echo "Killed VS Code server processes." || echo "No VS Code server processes found."
+}
+
+## 6. LOCAL OVERRIDES
+
+[[ -s ~/.shrc.local ]] && source ~/.shrc.local
