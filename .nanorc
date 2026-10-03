@@ -25,8 +25,8 @@ bind M-F nextword all
 # ponytail: no native "move line" function in nano; macro emulates it via
 # cut+move+paste. Cursor column resets to 0 on the moved line; edge cases at
 # buffer start/end may behave oddly. Real fix if that matters: a nano patch.
-# Shift+Alt+U / Shift+Alt+D keep Alt+Up/Down as scrollup/scrolldown here;
-# ~/.nanorc.darwin rebinds Alt+Up/Down to these macros on macOS.
+# Shift+Alt+U / Shift+Alt+D keep Alt+Up/Down as scrollup/scrolldown, which the
+# mouse wheel also sends, so rebinding them would hijack scrolling.
 bind Sh-M-U "{cut}{up}{paste}{up}" main
 bind Sh-M-D "{cut}{down}{paste}{up}" main
 
