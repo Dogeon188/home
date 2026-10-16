@@ -260,11 +260,15 @@ icat() {
     fi
 }
 
-# Reset ghostty pane colors after ssh (per-host colors set via LocalCommand in ~/.ssh/config).
+# Reset terminal state after ssh: ghostty pane colors (per-host colors set via LocalCommand in
+# ~/.ssh/config), plus mouse/focus reporting and kitty keyboard modes that a remote tmux/vim
+# leaves on when the connection drops before it can turn them off.
 # A precmd hook, not an ssh() wrapper: rsync/scp/git spawn ssh directly, bypassing shell functions.
-_reset_ghostty_colors() { [[ -z $SSH_CONNECTION ]] && printf '\e]111;\a\e]110;\a' }
+_reset_terminal_after_ssh() {
+    [[ -z $SSH_CONNECTION ]] && printf '\e]111;\a\e]110;\a\e[?1000l\e[?1002l\e[?1003l\e[?1004l\e[?1006l\e[<u'
+}
 autoload -Uz add-zsh-hook
-add-zsh-hook precmd _reset_ghostty_colors
+add-zsh-hook precmd _reset_terminal_after_ssh
 
 # nano5's home is over quota, so Ghostty can't install xterm-ghostty terminfo there.
 # Wrap Ghostty's ssh() once its deferred init (first precmd) has defined it.
