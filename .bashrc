@@ -175,11 +175,8 @@ if _cache_init _uv_completion uv generate-shell-completion bash; then
     fi
 fi
 
-# Initialize bun completions
-if [[ -s "$BUN_INSTALL/_bun" ]]; then
-    # bun's completion script auto-detects the shell
-    source "$BUN_INSTALL/_bun" 2>/dev/null
-fi
+# bun prints bash completions when SHELL is bash and stdout is not a tty
+SHELL=/bin/bash _cache_init _bun_completion bun completions
 
 # Initialize zoxide (if available)
 _cache_init zoxide zoxide init bash
