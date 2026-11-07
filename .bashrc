@@ -14,10 +14,12 @@ export EDITOR='nano'
 
 # nanorc has no OS conditionals and `include` rejects bind lines, so macOS gets
 # a merged rcfile. -f skips the system nanorc, so prepend it for highlighting.
-if [[ "$OSTYPE" == "darwin"* ]]; then
+# Only GNU nano (Homebrew) knows -f: macOS /usr/bin/nano is pico, which opens
+# the rcfile as the document, so without brew nano keep plain `nano`.
+if [[ "$OSTYPE" == "darwin"* && -x "${HOMEBREW_PREFIX:-/opt/homebrew}/bin/nano" ]]; then
     mkdir -p ~/.cache
     cat "${HOMEBREW_PREFIX:-/opt/homebrew}/etc/nanorc" ~/.nanorc ~/.nanorc.darwin > ~/.cache/nanorc 2>/dev/null
-    export EDITOR="nano -f $HOME/.cache/nanorc"
+    export EDITOR="${HOMEBREW_PREFIX:-/opt/homebrew}/bin/nano -f $HOME/.cache/nanorc"
     alias nano="$EDITOR"
 fi
 
